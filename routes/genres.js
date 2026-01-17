@@ -1,5 +1,7 @@
 const express = require('express');
 const auth = require('../middleware/auth');
+const validate = require('../middleware/validate');
+const Joi = require('joi');
 const router = express.Router();
 
 const genres = [
@@ -7,17 +9,22 @@ const genres = [
     { id: 2, name: 'Comedy' }
 ];
 
+// Schema of genre
+const genresSchema = Joi.object({
+    name: Joi.string().min(3).max(50).required()
+});
+
 // Get all genres
 router.get('/', auth, (req, res) => {
     res.send(genres);
 });
 
 // Create a new genre
-router.post('/', (req, res) => {
+router.post('/', validate(genresSchema), (req, res) => {
     // Validation
-    if (!req.body.name || req.body.name.length < 3) {
-        return res.status(400).send('Name is required and it should be atleast 3 characters long');
-    }
+    // if (!req.body.name || req.body.name.length < 3) {
+    //     return res.status(400).send('Name is required and it should be atleast 3 characters long');
+    // }
 
     const genre = {
         id: genres.length + 1,
